@@ -2,6 +2,8 @@ package app
 
 import (
   "github.com/robfig/revel"
+  "github.com/robfig/revel/modules/jobs/app/jobs"
+  "monitoring/app/tasks"
 )
 
 func init() {
@@ -18,6 +20,9 @@ func init() {
 		revel.InterceptorFilter,       // Run interceptors around the action.
 		revel.ActionInvoker,           // Invoke the action.
 	}
+  revel.OnAppStart(func() {
+    jobs.Schedule("*/10 * * * *", tasks.CheckServices{})
+  })
 }
 
 

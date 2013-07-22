@@ -3,6 +3,7 @@
 # ~~~~
 
 module:testrunner
+module:jobs
 
 GET     /                                       App.Index
 GET     /status/:app                            App.Status
