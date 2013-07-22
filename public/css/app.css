@@ -1,0 +1,9 @@
+.states .acked {
+  background: yellow;
+}
+.states .healthy {
+  background: green;
+}
+.states .error {
+  background: red;
+}

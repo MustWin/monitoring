@@ -1,0 +1,40 @@
+{{set . "title" "Home"}}
+{{template "header.html" .}}
+
+<header class="hero-unit" style="background-color:#A9F16C">
+  <h1>MustWin Monitoring</h1>
+</header>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Healthy</th>
+      <th>Acked</th>
+    </tr>
+  </thead>
+  <tbody class="states">
+    {{range .services}}
+      <tr class="
+        {{if eq .Healthy false}}
+          {{if eq .Acked true}}acked{{end}}
+          {{if eq .Acked false}}error{{end}}
+        {{end}}
+        {{if eq .Healthy true}}healthy{{end}}
+        ">
+        <th><a href="/status/{{.Name}}">{{.Name}}</a></th>
+        <th>{{.Healthy}}</th>
+        <th>{{.Acked}}</th>
+      </tr>
+    {{end}}
+  </tbody>
+</table>
+<div class="container">
+  <div class="row">
+    <div class="span6">
+      {{template "flash.html" .}}
+    </div>
+  </div>
+</div>
+
+{{template "footer.html" .}}
