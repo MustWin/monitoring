@@ -38,7 +38,7 @@ func  GetDb() *beedb.Model {
   }
   // construct a gorp DbMap
   orm := beedb.New(rawdb, "pg")
-  beedb.OnDebug=true
+  //beedb.OnDebug=true
   beedb.PluralizeTableNames=true
   return &orm
 }
@@ -54,10 +54,11 @@ func AllServices() (services []Service, err error) {
 
 func FindServiceByName(name string) Service {
   var service Service
-  err := GetDb().Where("name = ?", name).Find(&service)
+  err := GetDb().Where("name = $1", name).Find(&service)
   if (err != nil) {
     revel.ERROR.Println(err)
   }
+    revel.ERROR.Println(service)
   return service
 }
 

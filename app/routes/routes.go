@@ -24,6 +24,27 @@ func (_ tApp) Status(
 	return revel.MainRouter.Reverse("App.Status", args).Url
 }
 
+func (_ tApp) Mail(
+		body string,
+		) string {
+	args := make(map[string]string)
+	
+	revel.Unbind(args, "body", body)
+	return revel.MainRouter.Reverse("App.Mail", args).Url
+}
+
+
+type tJobs struct {}
+var Jobs tJobs
+
+
+func (_ tJobs) Status(
+		) string {
+	args := make(map[string]string)
+	
+	return revel.MainRouter.Reverse("Jobs.Status", args).Url
+}
+
 
 type tStatic struct {}
 var Static tStatic
@@ -51,18 +72,6 @@ func (_ tStatic) ServeModule(
 	revel.Unbind(args, "prefix", prefix)
 	revel.Unbind(args, "filepath", filepath)
 	return revel.MainRouter.Reverse("Static.ServeModule", args).Url
-}
-
-
-type tJobs struct {}
-var Jobs tJobs
-
-
-func (_ tJobs) Status(
-		) string {
-	args := make(map[string]string)
-	
-	return revel.MainRouter.Reverse("Jobs.Status", args).Url
 }
 
 

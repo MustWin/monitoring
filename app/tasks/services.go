@@ -3,6 +3,7 @@ package tasks
 import (
   "github.com/robfig/revel"
   "monitoring/app/models"
+  "monitoring/app/mail"
   "net"
   "net/http"
   "time"
@@ -26,58 +27,66 @@ var client = &http.Client{
   Transport: &transport,
 }
 
+func markAsDown(service *models.Service, status string) {
+  service.Healthy = false
+  if service.Status != status {
+    revel.ERROR.Printf("Error - Marking Service %s as Down", service.Name)
+    // ALERT
+    mail.Send(
+      []string{"we@mustw.in"}, 
+      "we@mustw.in", 
+      fmt.Sprintf("Service Alert - %s", service.Name), 
+      fmt.Sprintf("%s is DOWN.  Here's the status reported from our monitor:\n\n" + status, service.Name),
+    )
+  }
+  service.Status = status
+  models.UpdateService(service)
+}
 
-func checkService(service *models.Service) {
+func checkService(service models.Service) {
   req, _ := http.NewRequest("GET", service.Url, nil)
   req.Header.Add("User-Agent", "MustWin/health-checker")
   resp, err := client.Do(req)
   if (err != nil) {
-  // PICK UP HERE, FOR SOME REASON THE SERVICE THAT IS SAVED LOSES ALL THE REST OF THE DATAS
     // This handles timeouts, 500s, etc
-    revel.ERROR.Println(err)
-    service.Healthy = false
-    service.Status = fmt.Sprintf("{\"error\": \"%s\"}", err)
-    models.UpdateService(service)
+    markAsDown(&service, fmt.Sprintf("{\"error\": \"%s\"}", err))
     return
   }
   // Fetch the body
   defer resp.Body.Close()
   body, err := ioutil.ReadAll(resp.Body)
   if (err != nil) {
-    revel.ERROR.Println(err)
-    service.Healthy = false
-    service.Status = fmt.Sprintf("{\"error\": \"%s\"}", err)
-    models.UpdateService(service)
+    markAsDown(&service, fmt.Sprintf("{\"error\": \"%s\"}", err))
     return
   }
 
-  // Update the state
-  // TODO: maybe be smarter with json?
-  service.Status = string(body)
-
   if (resp.StatusCode != 200) {
+    // TODO: maybe be smarter with json?
+    markAsDown(&service, string(body))
     service.Healthy = false
     if (service.Status != string(body)) {
       // TODO: add time condition to re-send alerts
       // TODO: SEND ALERTS, RAISE HELL
-      revel.ERROR.Println(err)
-      revel.ERROR.Printf("Error in %s: %s", service.Name, body)
     }
   } else {
-    // Reset
+    // TODO: healthcheck style problem detection. Handle Successful response with error info inside.
+    // Reset the service
     service.Healthy = true
+    if service.Status != string(body) {
+      revel.INFO.Printf("Marking Service %s as OK", service.Name)
+    }
+    service.Status = string(body)
     service.Acked = false
+    models.UpdateService(&service)
   }
-  models.UpdateService(service)
 }
 
-type CheckServices struct {
-
-}
+type CheckServices struct {}
 
 func (cs CheckServices) Run() {
   services, _ := models.AllServices()
+  revel.INFO.Println("Performing Service Check")
   for _, service := range services {
-    go checkService(&service)
+    go checkService(service)
   }
 }

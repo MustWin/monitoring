@@ -5,13 +5,14 @@ import (
 	"flag"
 	"reflect"
 	"github.com/robfig/revel"
-	controllers1 "github.com/robfig/revel/modules/jobs/app/controllers"
+	controllers0 "github.com/robfig/revel/modules/jobs/app/controllers"
 	_ "github.com/robfig/revel/modules/jobs/app/jobs"
-	controllers0 "github.com/robfig/revel/modules/static/app/controllers"
+	controllers1 "github.com/robfig/revel/modules/static/app/controllers"
 	_ "github.com/robfig/revel/modules/testrunner/app"
 	controllers2 "github.com/robfig/revel/modules/testrunner/app/controllers"
 	_ "monitoring/app"
 	controllers "monitoring/app/controllers"
+	_ "monitoring/app/mail"
 	tests "monitoring/tests"
 )
 
@@ -50,10 +51,33 @@ func main() {
 				RenderArgNames: map[int][]string{ 
 				},
 			},
+			&revel.MethodType{
+				Name: "Mail",
+				Args: []*revel.MethodArg{ 
+					&revel.MethodArg{Name: "body", Type: reflect.TypeOf((*string)(nil)) },
+				},
+				RenderArgNames: map[int][]string{ 
+				},
+			},
 			
 		})
 	
-	revel.RegisterController((*controllers0.Static)(nil),
+	revel.RegisterController((*controllers0.Jobs)(nil),
+		[]*revel.MethodType{
+			&revel.MethodType{
+				Name: "Status",
+				Args: []*revel.MethodArg{ 
+				},
+				RenderArgNames: map[int][]string{ 
+					19: []string{ 
+						"entries",
+					},
+				},
+			},
+			
+		})
+	
+	revel.RegisterController((*controllers1.Static)(nil),
 		[]*revel.MethodType{
 			&revel.MethodType{
 				Name: "Serve",
@@ -72,21 +96,6 @@ func main() {
 					&revel.MethodArg{Name: "filepath", Type: reflect.TypeOf((*string)(nil)) },
 				},
 				RenderArgNames: map[int][]string{ 
-				},
-			},
-			
-		})
-	
-	revel.RegisterController((*controllers1.Jobs)(nil),
-		[]*revel.MethodType{
-			&revel.MethodType{
-				Name: "Status",
-				Args: []*revel.MethodArg{ 
-				},
-				RenderArgNames: map[int][]string{ 
-					19: []string{ 
-						"entries",
-					},
 				},
 			},
 			
