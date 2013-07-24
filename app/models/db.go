@@ -17,7 +17,7 @@ type Status struct {
 }
 
 type Service struct {
-  Id int64 `json:"id"`
+  Id int `json:"id"`
   Name string `json:"name"`
   Url string `json:"url"`
   Status string `json:"status"`
@@ -58,7 +58,6 @@ func FindServiceByName(name string) Service {
   if (err != nil) {
     revel.ERROR.Println(err)
   }
-    revel.ERROR.Println(service)
   return service
 }
 

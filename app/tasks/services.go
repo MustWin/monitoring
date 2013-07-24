@@ -72,6 +72,7 @@ func checkService(service models.Service) {
     // TODO: healthcheck style problem detection. Handle Successful response with error info inside.
     // Reset the service
     service.Healthy = true
+      revel.INFO.Printf("Marking Service %s as OK", service.Name)
     if service.Status != string(body) {
       revel.INFO.Printf("Marking Service %s as OK", service.Name)
     }

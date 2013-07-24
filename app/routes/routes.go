@@ -24,6 +24,20 @@ func (_ tApp) Status(
 	return revel.MainRouter.Reverse("App.Status", args).Url
 }
 
+func (_ tApp) Delete(
+		) string {
+	args := make(map[string]string)
+	
+	return revel.MainRouter.Reverse("App.Delete", args).Url
+}
+
+func (_ tApp) Create(
+		) string {
+	args := make(map[string]string)
+	
+	return revel.MainRouter.Reverse("App.Create", args).Url
+}
+
 func (_ tApp) Mail(
 		body string,
 		) string {
@@ -34,15 +48,33 @@ func (_ tApp) Mail(
 }
 
 
-type tJobs struct {}
-var Jobs tJobs
+type tTestRunner struct {}
+var TestRunner tTestRunner
 
 
-func (_ tJobs) Status(
+func (_ tTestRunner) Index(
 		) string {
 	args := make(map[string]string)
 	
-	return revel.MainRouter.Reverse("Jobs.Status", args).Url
+	return revel.MainRouter.Reverse("TestRunner.Index", args).Url
+}
+
+func (_ tTestRunner) Run(
+		suite string,
+		test string,
+		) string {
+	args := make(map[string]string)
+	
+	revel.Unbind(args, "suite", suite)
+	revel.Unbind(args, "test", test)
+	return revel.MainRouter.Reverse("TestRunner.Run", args).Url
+}
+
+func (_ tTestRunner) List(
+		) string {
+	args := make(map[string]string)
+	
+	return revel.MainRouter.Reverse("TestRunner.List", args).Url
 }
 
 
@@ -75,33 +107,15 @@ func (_ tStatic) ServeModule(
 }
 
 
-type tTestRunner struct {}
-var TestRunner tTestRunner
+type tJobs struct {}
+var Jobs tJobs
 
 
-func (_ tTestRunner) Index(
+func (_ tJobs) Status(
 		) string {
 	args := make(map[string]string)
 	
-	return revel.MainRouter.Reverse("TestRunner.Index", args).Url
-}
-
-func (_ tTestRunner) Run(
-		suite string,
-		test string,
-		) string {
-	args := make(map[string]string)
-	
-	revel.Unbind(args, "suite", suite)
-	revel.Unbind(args, "test", test)
-	return revel.MainRouter.Reverse("TestRunner.Run", args).Url
-}
-
-func (_ tTestRunner) List(
-		) string {
-	args := make(map[string]string)
-	
-	return revel.MainRouter.Reverse("TestRunner.List", args).Url
+	return revel.MainRouter.Reverse("Jobs.Status", args).Url
 }
 
 

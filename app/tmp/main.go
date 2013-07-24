@@ -5,11 +5,11 @@ import (
 	"flag"
 	"reflect"
 	"github.com/robfig/revel"
-	controllers0 "github.com/robfig/revel/modules/jobs/app/controllers"
+	controllers2 "github.com/robfig/revel/modules/jobs/app/controllers"
 	_ "github.com/robfig/revel/modules/jobs/app/jobs"
 	controllers1 "github.com/robfig/revel/modules/static/app/controllers"
 	_ "github.com/robfig/revel/modules/testrunner/app"
-	controllers2 "github.com/robfig/revel/modules/testrunner/app/controllers"
+	controllers0 "github.com/robfig/revel/modules/testrunner/app/controllers"
 	_ "monitoring/app"
 	controllers "monitoring/app/controllers"
 	_ "monitoring/app/mail"
@@ -38,7 +38,7 @@ func main() {
 				Args: []*revel.MethodArg{ 
 				},
 				RenderArgNames: map[int][]string{ 
-					15: []string{ 
+					16: []string{ 
 						"services",
 					},
 				},
@@ -47,6 +47,20 @@ func main() {
 				Name: "Status",
 				Args: []*revel.MethodArg{ 
 					&revel.MethodArg{Name: "app", Type: reflect.TypeOf((*string)(nil)) },
+				},
+				RenderArgNames: map[int][]string{ 
+				},
+			},
+			&revel.MethodType{
+				Name: "Delete",
+				Args: []*revel.MethodArg{ 
+				},
+				RenderArgNames: map[int][]string{ 
+				},
+			},
+			&revel.MethodType{
+				Name: "Create",
+				Args: []*revel.MethodArg{ 
 				},
 				RenderArgNames: map[int][]string{ 
 				},
@@ -62,16 +76,35 @@ func main() {
 			
 		})
 	
-	revel.RegisterController((*controllers0.Jobs)(nil),
+	revel.RegisterController((*controllers0.TestRunner)(nil),
 		[]*revel.MethodType{
 			&revel.MethodType{
-				Name: "Status",
+				Name: "Index",
 				Args: []*revel.MethodArg{ 
 				},
 				RenderArgNames: map[int][]string{ 
-					19: []string{ 
-						"entries",
+					46: []string{ 
+						"testSuites",
 					},
+				},
+			},
+			&revel.MethodType{
+				Name: "Run",
+				Args: []*revel.MethodArg{ 
+					&revel.MethodArg{Name: "suite", Type: reflect.TypeOf((*string)(nil)) },
+					&revel.MethodArg{Name: "test", Type: reflect.TypeOf((*string)(nil)) },
+				},
+				RenderArgNames: map[int][]string{ 
+					69: []string{ 
+						"error",
+					},
+				},
+			},
+			&revel.MethodType{
+				Name: "List",
+				Args: []*revel.MethodArg{ 
+				},
+				RenderArgNames: map[int][]string{ 
 				},
 			},
 			
@@ -101,35 +134,16 @@ func main() {
 			
 		})
 	
-	revel.RegisterController((*controllers2.TestRunner)(nil),
+	revel.RegisterController((*controllers2.Jobs)(nil),
 		[]*revel.MethodType{
 			&revel.MethodType{
-				Name: "Index",
+				Name: "Status",
 				Args: []*revel.MethodArg{ 
 				},
 				RenderArgNames: map[int][]string{ 
-					46: []string{ 
-						"testSuites",
+					19: []string{ 
+						"entries",
 					},
-				},
-			},
-			&revel.MethodType{
-				Name: "Run",
-				Args: []*revel.MethodArg{ 
-					&revel.MethodArg{Name: "suite", Type: reflect.TypeOf((*string)(nil)) },
-					&revel.MethodArg{Name: "test", Type: reflect.TypeOf((*string)(nil)) },
-				},
-				RenderArgNames: map[int][]string{ 
-					69: []string{ 
-						"error",
-					},
-				},
-			},
-			&revel.MethodType{
-				Name: "List",
-				Args: []*revel.MethodArg{ 
-				},
-				RenderArgNames: map[int][]string{ 
 				},
 			},
 			

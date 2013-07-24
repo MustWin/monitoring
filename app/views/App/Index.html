@@ -22,13 +22,20 @@
         {{end}}
         {{if eq .Healthy true}}healthy{{end}}
         ">
-        <th><a href="/status/{{.Name}}">{{.Name}}</a></th>
-        <th>{{.Healthy}}</th>
-        <th>{{.Acked}}</th>
+        <td><a href="/status/{{.Name}}">{{.Name}}</a></td>
+        <td>{{.Healthy}}</td>
+        <td>{{.Acked}}</td>
+        <td><a class="remove-link" href="javascript://" data-service-name="{{.Name}}">Remove</a></td>
       </tr>
     {{end}}
   </tbody>
 </table>
+<h3>Add a Service</h3>
+<form id="add-service-form" action="/App/Create" method="POST">
+  <input type="text" name="name" placeholder="Service Name">
+  <input type="text" name="url" placeholder="http://service-url.tld">
+  <button type="submit">Add</button>
+</form>
 <div class="container">
   <div class="row">
     <div class="span6">
@@ -37,4 +44,24 @@
   </div>
 </div>
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+$(function() {
+  $('.remove-link').click(function(evt){
+    var link = $(this);
+    var name = link.data('service-name');
+    $.ajax({
+      url: '/App/delete',
+      type: 'POST',
+      data: 'name=' + name,
+      success: function() {
+        window.location.reload();
+      },
+      error: function(err) {
+        console.log("An error occurred. " + err);
+      }
+    });
+  });
+});
+</script>
 {{template "footer.html" .}}
