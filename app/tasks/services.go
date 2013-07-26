@@ -9,6 +9,7 @@ import (
   "time"
   "fmt"
   "io/ioutil"
+  "errors"
 )
 
 // Configure the HTTP client
@@ -29,6 +30,7 @@ var client = &http.Client{
 
 func markAsDown(service *models.Service, status string) {
   service.Healthy = false
+  revel.ERROR.Printf("")
   if service.Status != status {
     revel.ERROR.Printf("Error - Marking Service %s as Down", service.Name)
     // ALERT
@@ -43,42 +45,48 @@ func markAsDown(service *models.Service, status string) {
   models.UpdateService(service)
 }
 
-func checkService(service models.Service) {
+func checkService(service models.Service, tries int) (models.Service, error) {
   req, _ := http.NewRequest("GET", service.Url, nil)
   req.Header.Add("User-Agent", "MustWin/health-checker")
   resp, err := client.Do(req)
   if (err != nil) {
     // This handles timeouts, 500s, etc
+    if (tries < 1) {
+      return checkService(service, tries + 1)
+    }
     markAsDown(&service, fmt.Sprintf("{\"error\": \"%s\"}", err))
-    return
+    return service, err
   }
   // Fetch the body
   defer resp.Body.Close()
   body, err := ioutil.ReadAll(resp.Body)
   if (err != nil) {
+    if (tries < 1) {
+      return checkService(service, tries + 1)
+    }
     markAsDown(&service, fmt.Sprintf("{\"error\": \"%s\"}", err))
-    return
+    return service, err
   }
 
   if (resp.StatusCode != 200) {
-    // TODO: maybe be smarter with json?
-    markAsDown(&service, string(body))
-    service.Healthy = false
-    if (service.Status != string(body)) {
-      // TODO: add time condition to re-send alerts
-      // TODO: SEND ALERTS, RAISE HELL
+    if (tries < 1) {
+      return checkService(service, tries + 1)
     }
+    // TODO: maybe be smarter with json?
+    service.Healthy = false
+    markAsDown(&service, string(body))
+    return service, errors.New(string(body))
   } else {
     // TODO: healthcheck style problem detection. Handle Successful response with error info inside.
     // Reset the service
     service.Healthy = true
-      revel.INFO.Printf("Marking Service %s as OK", service.Name)
-    if service.Status != string(body) {
+    if (service.Status != string(body)) {
       revel.INFO.Printf("Marking Service %s as OK", service.Name)
     }
     service.Status = string(body)
     service.Acked = false
     models.UpdateService(&service)
+    return service, nil
   }
 }
 
@@ -88,6 +96,6 @@ func (cs CheckServices) Run() {
   services, _ := models.AllServices()
   revel.INFO.Println("Performing Service Check")
   for _, service := range services {
-    go checkService(service)
+    go checkService(service, 0)
   }
 }
