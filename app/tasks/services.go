@@ -4,7 +4,6 @@ import (
   "github.com/robfig/revel"
   "monitoring/app/models"
   "monitoring/app/mail"
-  "net"
   "net/http"
   "time"
   "fmt"
@@ -15,14 +14,14 @@ import (
 
 // Configure the HTTP client
 
-var transport = &http.Transport{
+var transport = &httpclient.Transport{
   ConnectTimeout: 5 * time.Second,
   ResponseHeaderTimeout: 5 * time.Second,
-  RequestTimeout: 12 * time.Second
+  RequestTimeout: 12 * time.Second,
 }
 
 var client = &http.Client{
-  Transport: &transport,
+  Transport: transport,
 }
 
 func markAsDown(service *models.Service, status string) {
@@ -51,7 +50,7 @@ func checkService(service models.Service, tries int) (models.Service, error) {
     if (tries < 1) {
       return checkService(service, tries + 1)
     }
-    markAsDown(&service, fmt.Sprintf("{\"error\": \"%s\"}", err))
+    markAsDown(&service, fmt.Sprintf("{\"error\": \"1: %s\"}", err))
     return service, err
   }
   // Fetch the body
@@ -61,7 +60,7 @@ func checkService(service models.Service, tries int) (models.Service, error) {
     if (tries < 1) {
       return checkService(service, tries + 1)
     }
-    markAsDown(&service, fmt.Sprintf("{\"error\": \"%s\"}", err))
+    markAsDown(&service, fmt.Sprintf("{\"error\": \"2: %s\"}", err))
     return service, err
   }
 
@@ -72,7 +71,7 @@ func checkService(service models.Service, tries int) (models.Service, error) {
     // TODO: maybe be smarter with json?
     service.Healthy = false
     markAsDown(&service, string(body))
-    return service, errors.New(string(body))
+    return service, errors.New("3: " + string(body))
   } else {
     // TODO: healthcheck style problem detection. Handle Successful response with error info inside.
     // Reset the service

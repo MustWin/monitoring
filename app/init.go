@@ -21,7 +21,7 @@ func init() {
 		revel.ActionInvoker,           // Invoke the action.
 	}
   revel.OnAppStart(func() {
-    jobs.Schedule("* * * * *", tasks.CheckServices{})
+    jobs.Schedule("0 * * * *", tasks.CheckServices{})
   })
 }
 
