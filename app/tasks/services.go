@@ -10,18 +10,15 @@ import (
   "fmt"
   "io/ioutil"
   "errors"
+  "github.com/mreiferson/go-httpclient"
 )
 
 // Configure the HTTP client
 
-var timeout = time.Duration(10 * time.Second)
-
-func dialTimeout(network, addr string) (net.Conn, error) {
-  return net.DialTimeout(network, addr, timeout)
-}
-
-var transport = http.Transport{
-  Dial: dialTimeout,
+var transport = &http.Transport{
+  ConnectTimeout: 5 * time.Second,
+  ResponseHeaderTimeout: 5 * time.Second,
+  RequestTimeout: 12 * time.Second
 }
 
 var client = &http.Client{
