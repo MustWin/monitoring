@@ -5,6 +5,7 @@ import (
   "monitoring/app/models"
   "monitoring/app/mail"
   "net/http"
+  "crypto/tls"
   "time"
   "fmt"
   "io/ioutil"
@@ -18,6 +19,7 @@ var transport = &httpclient.Transport{
   ConnectTimeout: 5 * time.Second,
   ResponseHeaderTimeout: 5 * time.Second,
   RequestTimeout: 12 * time.Second,
+  TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 }
 
 var client = &http.Client{
