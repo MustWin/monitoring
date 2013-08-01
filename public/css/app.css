@@ -1,9 +1,9 @@
 .states .acked {
-  background: yellow;
+  background: rgb(253, 253, 115);
 }
 .states .healthy {
-  background: green;
+  background: #A9F16C;
 }
 .states .error {
-  background: red;
+  background: rgb(255, 134, 134);
 }
