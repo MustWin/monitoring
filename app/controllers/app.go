@@ -34,6 +34,10 @@ func (c App) Create() revel.Result {
  // var name, url string
   c.Params.Bind(&service.Name, "name")
   c.Params.Bind(&service.Url, "url")
+  service.Status = ""
+  service.Healthy = true
+  service.Acked = false
+  revel.ERROR.Println(service)
   service.UpdatedAt = time.Now()
   service.CreatedAt = time.Now()
   models.GetDb().Save(&service)
